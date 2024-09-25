@@ -1,12 +1,11 @@
 import cv2
 import numpy as np
 
-
 #import billeder
 img = cv2.imread("1.jpg")
 imgHvid = img.copy()
 gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
-hvid = cv2.imread('hvid.png')
+
 
 Grayimg = cv2.imread("1.jpg", cv2.IMREAD_GRAYSCALE)
 
@@ -43,16 +42,24 @@ yloc_E, xloc_E = np.where(result2 >= threshold_E)
 threshold_W = 0.687
 yloc_W, xloc_W = np.where(result3 >= threshold_W)
 
+# Assuming xloc_N and yloc_N are defined and img, template_width, template_height are initialized
+xPos = []
+yPos = []
 count = 0
-# Draw circles on detected positions
+
 for (x, y) in zip(xloc_N, yloc_N):
+    xPos.append(x)
+    yPos.append(y)
     cv2.circle(img, (x + template_width // 2, y + template_height // 2), 5, (255, 255, 255), -1)
-    count += 1
+    print(x, y)
 
-
+for i in range(len(xPos)):
+    if not (xPos[i] - 2 <= x <= xPos[i] +2 or yPos[i] - 2 <= y <= yPos[i] + 2):
+        count += 1
+print(count)
 for (x, y) in zip(xloc_S, yloc_S):
     cv2.circle(img, (x + template_width1 // 2, y + template_height1 // 2), 5, (255, 255, 255), -1)
-    count += 1
+
 
 for (x, y) in zip(xloc_E, yloc_E):
     cv2.circle(img, (x + template_width2 // 2, y + template_height2 // 2), 5, (255, 255, 255), -1)
@@ -61,19 +68,9 @@ for (x, y) in zip(xloc_E, yloc_E):
 for (x, y) in zip(xloc_W, yloc_W):
     cv2.circle(img, (x + template_width3 // 2, y + template_height3 // 2), 5, (255, 255, 255), -1)
 
-finalRes = cv2.matchTemplate(img, hvid, cv2.TM_CCOEFF_NORMED)
 
-
-count = 0
-for (x, y) in img:
-    cv2.circle(img, (x + template_width // 2, y + template_height // 2), 10, (0, 0, 255), -1)
-    print(x,y)
-
-    count += 1
-print(count)
 
 cv2.imshow('Detected Hearts', img)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
-
 
