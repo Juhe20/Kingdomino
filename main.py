@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+from sklearn.cluster import KMeans
 
 #import billeder
 img = cv2.imread("1.jpg")
@@ -51,12 +52,12 @@ for (x, y) in zip(xloc_N, yloc_N):
     xPos.append(x)
     yPos.append(y)
     cv2.circle(img, (x + template_width // 2, y + template_height // 2), 5, (255, 255, 255), -1)
-    print(x, y)
+    #print(x, y)
 
 for i in range(len(xPos)):
     if not (xPos[i] - 2 <= x <= xPos[i] +2 or yPos[i] - 2 <= y <= yPos[i] + 2):
         count += 1
-print(count)
+#print(count)
 for (x, y) in zip(xloc_S, yloc_S):
     cv2.circle(img, (x + template_width1 // 2, y + template_height1 // 2), 5, (255, 255, 255), -1)
 
@@ -68,9 +69,39 @@ for (x, y) in zip(xloc_E, yloc_E):
 for (x, y) in zip(xloc_W, yloc_W):
     cv2.circle(img, (x + template_width3 // 2, y + template_height3 // 2), 5, (255, 255, 255), -1)
 
+height = 500
+width = 500
+box_size = 100
+all_colors = []
+
+dominant_colors = {}
+
+# Loop through the image in steps of box_size
+for y in range(0, height, box_size):
+    for x in range(0, width, box_size):
+        # Extract the ROI
+        roi = img[y:y + box_size, x:x + box_size]
+
+        # Reshape the ROI to be a list of pixels
+        pixels = roi.reshape(-1, 3)
+
+        # Use KMeans to find the dominant color
+        kmeans = KMeans(n_clusters=1)
+        kmeans.fit(pixels)
+
+        # Get the dominant color
+        dominant_color = kmeans.cluster_centers_[0].astype(int)
+
+        # Store the dominant color in the dictionary with box coordinates
+        dominant_colors[(x, y)] = dominant_color
+
+# Print the dominant colors for each box
+for (x, y), color in dominant_colors.items():
+    #print(f'Dominant color for box at ({x}, {y}) (BGR): {color}')
+    # Convert to RGB format for display if needed
+    print(f'Dominant color (RGB): {color[::-1]}')
 
 
 cv2.imshow('Detected Hearts', img)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
-
