@@ -15,8 +15,6 @@ Crown_S = cv2.imread("Crown_S.png")
 Crown_E = cv2.imread("Crown_E.png")
 Crown_W = cv2.imread("Crown_W.png")
 
-
-
 # List of crown templates
 crown_templates = [Crown_N, Crown_S, Crown_E, Crown_W]
 thresholds = [0.62, 0.62, 0.65, 0.65]  # Adjust these thresholds for each template
@@ -45,9 +43,11 @@ detected_crowns = detect_crowns(gray_blurred, crown_templates, thresholds)
 # Filter out duplicate detections
 unique_crowns = filter_duplicates(detected_crowns)
 
+CrownPositions = []
 # Function to draw detected crowns on the image
 def draw_detected_crowns(img, detected_crowns):
     for (x, y) in detected_crowns:
+        CrownPositions.append((x, y))
         # Draw a rectangle around the detected crown
         cv2.rectangle(img, (x, y), (x + 25, y + 25), (0, 255, 0), 2)  # Green rectangle
         # Optionally, overlay a crown template
@@ -92,7 +92,7 @@ for y in range(0, height, box_size):
 for (x, y), color in dominant_colors.items():
     #print(f'Dominant color for box at ({x}, {y}) (BGR): {color}')
     # Convert to RGB format for display if needed
-    print(f'Dominant color (RGB): {color[::-1]} at {(x, y)}')
+    #print(f'Dominant color (RGB): {color[::-1]} at {(x, y)}')
 
     # Check each tile color
     if all([41,54,15][i] <= color[::-1][i] <= [67, 73, 38][i] for i in range(len(color))):
@@ -132,14 +132,11 @@ for (x, y), color in dominant_colors.items():
 #print(Base) #Gray
 
 #Are they next to eachother?
-# Define the points
-
 # Function to check if two points are adjacent
 def are_adjacent(p1, p2):
     return (abs(p1[0] - p2[0]) == 100 and p1[1] == p2[1]) or (abs(p1[1] - p2[1]) == 100 and p1[0] == p2[0])
 
-# Function to perform DFS and count connected tiles
-def count_connected_tiles(start_point, visited):
+def count_connected_tiles(start_point, visited, tile_points):
     stack = [start_point]
     count = 0
 
@@ -148,31 +145,39 @@ def count_connected_tiles(start_point, visited):
         if current not in visited:
             visited.add(current)
             count += 1
-            # Check adjacent points
-            for point in Plains:
+            # Check adjacent points for the specific tile type
+            for point in tile_points:
                 if point not in visited and are_adjacent(current, point):
                     stack.append(point)
     return count
 
-# Main function to find all connected components
-def find_connected_components():
+def find_connected_components(tile_points):
     visited = set()
     connected_counts = []
 
-    for point in Plains:
+    for point in tile_points:
         if point not in visited:
-            count = count_connected_tiles(point, visited)
+            count = count_connected_tiles(point, visited, tile_points)
             connected_counts.append(count)
 
     return connected_counts
 
-# Get the counts of connected tiles
-connected_counts = find_connected_components()
+# Example usage for multiple tile types
+tile_types = {
+    "Forest": Forest,
+    "Wheat": Wheat,
+    "Sea": Sea,
+    "Mine": Mine,
+    "Plains": Plains,
+    "Swamp": Swamp,
+}
 
-# Print the results
-print("Number of connected tile groups:")
-for count in connected_counts:
-    print(count)
+# Get the counts of connected tiles for each type
+for tile_name, tile_points in tile_types.items():
+    connected_counts = find_connected_components(tile_points)
+    print(f"Number of connected tile groups for {tile_name}:")
+    for count in connected_counts:
+        print(count)
 
 draw_detected_crowns(gray_blurred, unique_crowns)
 cv2.imshow('Detected Hearts', gray_blurred)
