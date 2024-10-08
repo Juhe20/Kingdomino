@@ -72,21 +72,33 @@ for y in range(0, height, box_size):
         dominant_color = kmeans.cluster_centers_[0].astype(int)
         dominant_colors[(x, y)] = dominant_color
 
-        # Check each tile color
-        if all([41,54,15][i] <= dominant_color[::-1][i] <= [67, 73, 38][i] for i in range(len(dominant_color))):
+        if all([41, 54, 15][i] <= dominant_color[::-1][i] <= [67, 73, 38][i] for i in range(len(dominant_color))):
+            # Forest
             Forest.append((x, y))
-        elif all([158,130,0][i] <= dominant_color[::-1][i] <= [199,168, 17][i] for i in range(len(dominant_color))):
+            cv2.rectangle(gray_blurred, (x, y), (x + 25, y + 25), (255, 255, 255), 2)
+        elif all([158, 130, 0][i] <= dominant_color[::-1][i] <= [199, 168, 17][i] for i in range(len(dominant_color))):
+            # Wheat
             Wheat.append((x, y))
+            cv2.rectangle(gray_blurred, (x, y), (x + 25, y + 25), (0, 255, 255), 2)
         elif all([0, 70, 110][i] <= dominant_color[::-1][i] <= [80, 100, 200][i] for i in range(len(dominant_color))):
+            # Sea
             Sea.append((x, y))
-        elif all([50,40,10][i] <= dominant_color[::-1][i] <= [75,75, 32][i] for i in range(len(dominant_color))):
+            cv2.rectangle(gray_blurred, (x, y), (x + 25, y + 25), (255, 0, 255), 2)
+        elif all([50, 40, 10][i] <= dominant_color[::-1][i] <= [75, 75, 32][i] for i in range(len(dominant_color))):
+            # Mine
             Mine.append((x, y))
-        elif all([80,110,10][i] <= dominant_color[::-1][i] <= [150,182, 60][i] for i in range(len(dominant_color))):
+            cv2.rectangle(gray_blurred, (x, y), (x + 25, y + 25), (255, 255, 0), 2)
+        elif all([80, 110, 10][i] <= dominant_color[::-1][i] <= [150, 182, 60][i] for i in range(len(dominant_color))):
+            # Plains
             Plains.append((x, y))
-        elif all([60,70,30][i] <= dominant_color[::-1][i] <= [120,125, 80][i] for i in range(len(dominant_color))):
+            cv2.rectangle(gray_blurred, (x, y), (x + 25, y + 25), (0, 0, 0), 2)
+        elif all([60, 70, 30][i] <= dominant_color[::-1][i] <= [120, 125, 80][i] for i in range(len(dominant_color))):
+            # Swamp
             Swamp.append((x, y))
+            cv2.rectangle(gray_blurred, (x, y), (x + 25, y + 25), (255, 0, 0), 2)
         else:
             Base = Base + 1
+            cv2.rectangle(gray_blurred, (x, y), (x + 25, y + 25), (100, 100, 100), 2)
 
 # Function to check if two points are adjacent
 def are_adjacent(p1, p2):
