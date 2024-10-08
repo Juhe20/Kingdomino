@@ -3,15 +3,15 @@ import numpy as np
 from sklearn.cluster import KMeans
 
 # Import images
-img = cv2.imread("1.jpg")
+img = cv2.imread("Pictures/1.jpg")
 
 gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 gray_blurred = cv2.blur(img, (5, 5))
 
-Crown_N = cv2.imread("Crown_N.png")
-Crown_S = cv2.imread("Crown_S.png")
-Crown_E = cv2.imread("Crown_E.png")
-Crown_W = cv2.imread("Crown_W.png")
+Crown_N = cv2.imread("Pictures/Crown_N.png")
+Crown_S = cv2.imread("Pictures/Crown_S.png")
+Crown_E = cv2.imread("Pictures/Crown_E.png")
+Crown_W = cv2.imread("Pictures/Crown_W.png")
 
 # List of crown templates
 crown_templates = [Crown_N, Crown_S, Crown_E, Crown_W]
